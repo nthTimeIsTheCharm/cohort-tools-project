@@ -5,7 +5,8 @@ const PORT = 5005;
 
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
-// ...
+const students = require("./students.json");
+const cohorts = require("./cohorts.json")
 
 
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
@@ -24,10 +25,40 @@ app.use(cookieParser());
 
 // ROUTES - https://expressjs.com/en/starter/basic-routing.html
 // Devs Team - Start working on the routes here:
-// ...
+
+/*
+GET	/api/cohorts	(empty)	Returns all the cohorts in JSON format
+GET	/api/cohorts/:cohortId	(empty)	Returns the specified cohort by id
+*/
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
 });
+
+app.get("/api/cohorts", (req, res) =>{
+ res.json(cohorts); 
+});
+
+app.get("/api/cohorts/:cohortId", (req, res) => {
+  const {cohortId} = req.params;
+  const matchingCohort = cohorts.find((cohort) => cohort._id === Number(cohortId) );
+  res.json(matchingCohort);
+});
+
+app.get("/api/students", (req, res) => {
+  res.json(students);
+});
+
+app.get("/api/students/:studentId", (req, res) => {
+  const { studentId } = req.params;
+  const matchingStudent = students.find(
+    (students) => students._id === Number(studentId)
+  );;
+  res.json(matchingStudent);
+});
+
+
+
+
 
 
 // START SERVER
