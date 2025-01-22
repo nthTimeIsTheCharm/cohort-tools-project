@@ -38,24 +38,24 @@ app.get("/api/cohorts", (req, res) =>{
  res.json(cohorts); 
 });
 
-app.get("/api/cohorts/:cohortId", (req, res) => {
+/* app.get("/api/cohorts/:cohortId", (req, res) => {
   const {cohortId} = req.params;
   const matchingCohort = cohorts.find((cohort) => cohort._id === Number(cohortId) );
   res.json(matchingCohort);
 });
-
+ */
 app.get("/api/students", (req, res) => {
   res.json(students);
 });
 
-app.get("/api/students/:studentId", (req, res) => {
+/* app.get("/api/students/:studentId", (req, res) => {
   const { studentId } = req.params;
   const matchingStudent = students.find(
     (students) => students._id === Number(studentId)
   );;
   res.json(matchingStudent);
 });
-
+ */
 
 
 
