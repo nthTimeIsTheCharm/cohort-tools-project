@@ -3,6 +3,8 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const PORT = 5005;
 const mongoose = require("mongoose");
+const cors = require("cors");
+
 require("dotenv").config();
 const MONGODB_URI = process.env.MONGODB_URI;
 mongoose
@@ -14,8 +16,8 @@ mongoose
 
 // STATIC DATA
 // Devs Team - Import the provided files with JSON data of students and cohorts here:
-const students = require("./students.json");
-const cohorts = require("./cohorts.json");
+const Student = require("./models/Student.model");
+const Cohort = require("./models/Cohort.model");
 
 // INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
 const app = express();
@@ -28,6 +30,7 @@ app.use(morgan("dev"));
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors("*"));
 
 // ROUTES - https://expressjs.com/en/starter/basic-routing.html
 // Devs Team - Start working on the routes here:
@@ -78,7 +81,14 @@ app.post("/api/students", (req, res) => {
     });
 });
 
-app.get("/api/students", (req, res) => {});
+app.get("/api/students", (req, res) => {
+  Student.find()
+    .then((results) => res.json(results))
+    .catch((error) => {
+      console.error("STUDENTS NOT FOUND", error);
+      res.status(404).json({ error: "No student found" });
+    });
+});
 
 app.get("/api/students/:studentId", (req, res) => {
   const { studentId } = req.params;
