@@ -37,7 +37,7 @@ const StudentSchema = new Schema({
     required: [true, "Background is required"],
   },
   cohort: {
-    type: Number,
+    type: Object,
     required: [true, "Cohort is required"],
   },
   projects: {
