@@ -73,19 +73,56 @@ app.post("/api/cohorts", (req, res) => {
     inProgress: req.body.inProgress,
     programManager: req.body.programManager,
     leadTeacher: req.body.leadTeacher,
-    totalHours: req.body.totalHours
+    totalHours: req.body.totalHours,
   })
-  .then((createdCohort) => {
-    console.log("Cohort created ->", createdCohort);
-    res.status(201).json(createdCohort);
-  })
-  .catch((error) => {
-    console.error("Error while creating the cohort ->", error);
-    res.status(500).json({ error: "Failed to create the cohort" });
-  });
+    .then((createdCohort) => {
+      console.log("Cohort created ->", createdCohort);
+      res.status(201).json(createdCohort);
+    })
+    .catch((error) => {
+      console.error("Error while creating the cohort ->", error);
+      res.status(500).json({ error: "Failed to create the cohort" });
+    });
 });
 
 //students
+
+// RUTAS GET
+
+app.get("/api/students", (req, res) => {
+  Student.find()
+    .then((results) => res.json(results))
+    .catch((error) => {
+      console.error("STUDENTS NOT FOUND", error);
+      res.status(404).json({ error: "No student found" });
+    });
+});
+
+app.get("/api/students/:studentId", (req, res) => {
+  const { studentId } = req.params;
+  Student.findById(studentId)
+    .then((results) => res.json(results))
+    .catch((error) => {
+      console.error("STUDENT NOT FOUND", error);
+      res.status(404).json({ error: "No student found" });
+    });
+});
+
+app.get("/api/students/cohort/:cohortId", (req, res) => {
+  const { cohortId } = req.params;
+  console.log(cohortId);
+
+  Student.find({ cohort: cohortId })
+    .then((student) => {
+      res.json(student);
+    })
+    .catch((error) => {
+      res.status(400).json(error);
+    });
+});
+
+// RUTAS POST
+
 app.post("/api/students", (req, res) => {
   students
     .create({
@@ -110,38 +147,37 @@ app.post("/api/students", (req, res) => {
     });
 });
 
-app.get("/api/students", (req, res) => {
-  Student.find()
-    .then((results) => res.json(results))
-    .catch((error) => {
-      console.error("STUDENTS NOT FOUND", error);
-      res.status(404).json({ error: "No student found" });
-    });
-});
+// RUTAS PUT
 
+app.put("/students/:studentId", (req, res) => {
+  Student.findByIdAndUpdate(req.params.studentId, {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+    phone: req.body.phone,
+    linkedinUrl: req.body.linkedinUrl,
+    languages: req.body.languages,
+    program: req.body.program,
+    background: req.body.background,
+    cohort: req.body.cohort,
+    projects: req.body.projects,
+  })
 
-
-
-app.get("/api/students/:studentId", (req, res) => {
-  const { studentId } = req.params;
- Student.findById(studentId)
- .then((results) => res.json(results))
-    .catch((error) => {
-      console.error("STUDENT NOT FOUND", error);
-      res.status(404).json({ error: "No student found" });
-    });
-});
-
-
-
-app.get("/api/students/cohort/:cohortId", (req, res) => {
-  const { cohortId } = req.params;
-  console.log(cohortId);
-  
-
-  Student.find({ cohort: cohortId })
     .then((student) => {
       res.json(student);
+    })
+    .catch((error) => {
+      res.status(400).json(error);
+    });
+});
+
+// RUTAS DELETE
+
+app.put("/students/:studentId", (req, res) => {
+  Student.findByIdAndDelete(req.params.studentId)
+
+    .then((student) => {
+      res.json({student});
     })
     .catch((error) => {
       res.status(400).json(error);
