@@ -98,6 +98,18 @@ app.get("/api/students/:studentId", (req, res) => {
   res.json(matchingStudent);
 });
 
+app.get("/api/students/cohort/:cohortId", (req, res) => {
+  const { cohortId } = req.params;
+
+  Student.find({ cohort: cohortId })
+    .then((student) => {
+      res.json(student);
+    })
+    .catch((error) => {
+      res.status(400).json(error);
+    });
+});
+
 // START SERVER
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
