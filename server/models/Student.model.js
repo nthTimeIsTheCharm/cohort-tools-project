@@ -37,8 +37,10 @@ const StudentSchema = new Schema({
     required: [true, "Background is required"],
   },
   cohort: {
-    type: Object,
-    required: [true, "Cohort is required"],
+    type: Schema.Types.ObjectId,
+    ref:"Cohort",
+    required: [true, "Cohort is required"]
+    
   },
   projects: {
     type: [String],

@@ -121,6 +121,8 @@ app.get("/api/students/:studentId", (req, res) => {
 
 app.get("/api/students/cohort/:cohortId", (req, res) => {
   const { cohortId } = req.params;
+  console.log(cohortId);
+  
 
   Student.find({ cohort: cohortId })
     .then((student) => {
