@@ -45,15 +45,36 @@ app.get("/docs", (req, res) => {
 
 //cohorts
 app.get("/api/cohorts", (req, res) => {
-  res.json(cohorts);
+  Cohort.find()
+    .then((results) => res.json(results))
+    .catch((error) => {
+      console.error("COHORT NOT FOUND", error);
+      res.status(404).json({ error: "No cohort found" });
+    });
 });
-
 app.get("/api/cohorts/:cohortId", (req, res) => {
   const { cohortId } = req.params;
-  const matchingCohort = cohorts.find(
-    (cohort) => cohort._id === Number(cohortId)
-  );
-  res.json(matchingCohort);
+  Cohort.findById(cohortId)
+    .then((results) => res.json(results))
+    .catch((error) => {
+      console.error("COHORT NOT FOUND", error);
+      res.status(404).json({ error: "No cohort found" });
+    });
+});
+app.post("/api/cohorts", (req, res) => {
+  Cohort.create({
+    cohortSlug: req.body.cohortSlug,
+    cohortName: req.body.cohortName,
+    program: req.body.program,
+    format: req.body.format,
+    campus: req.body.campus,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+    inProgress: req.body.inProgress,
+    programManager: req.body.programManager,
+    leadTeacher: req.body.leadTeacher,
+    totalHours: req.body.totalHours,
+  });
 });
 
 //students
