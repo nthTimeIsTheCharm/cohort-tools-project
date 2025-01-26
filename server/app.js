@@ -73,7 +73,15 @@ app.post("/api/cohorts", (req, res) => {
     inProgress: req.body.inProgress,
     programManager: req.body.programManager,
     leadTeacher: req.body.leadTeacher,
-    totalHours: req.body.totalHours,
+    totalHours: req.body.totalHours
+  })
+  .then((createdCohort) => {
+    console.log("Cohort created ->", createdCohort);
+    res.status(201).json(createdCohort);
+  })
+  .catch((error) => {
+    console.error("Error while creating the cohort ->", error);
+    res.status(500).json({ error: "Failed to create the cohort" });
   });
 });
 
