@@ -10,7 +10,7 @@ const CohortSchema = new Schema({
   },
   program: {
     type: String,
-    enum: ["Web Development", "UX/UI", "Data Analytics", "Cybersecurity"],
+    enum: ["Web Dev", "UX/UI", "Data Analytics", "Cybersecurity"],
   },
   format: {
     type: String,
@@ -36,6 +36,7 @@ const CohortSchema = new Schema({
     type: String,
   },
   inProgress: { type: Boolean, default: true },
+  
   programManager: {
     type: String,
   },
