@@ -119,13 +119,20 @@ app.get("/api/students", (req, res) => {
     });
 });
 
+
+
+
 app.get("/api/students/:studentId", (req, res) => {
   const { studentId } = req.params;
-  const matchingStudent = students.find(
-    (students) => students._id === Number(studentId)
-  );
-  res.json(matchingStudent);
+ Student.findById(studentId)
+ .then((results) => res.json(results))
+    .catch((error) => {
+      console.error("STUDENT NOT FOUND", error);
+      res.status(404).json({ error: "No student found" });
+    });
 });
+
+
 
 app.get("/api/students/cohort/:cohortId", (req, res) => {
   const { cohortId } = req.params;
