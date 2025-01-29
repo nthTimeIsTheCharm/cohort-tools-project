@@ -1,11 +1,15 @@
+// IMPORTS
+
 const express = require("express");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const PORT = 5005;
 const mongoose = require("mongoose");
 const cors = require("cors");
-
 require("dotenv").config();
+
+// CONNECT TO DB
+
 const MONGODB_URI = process.env.MONGODB_URI;
 mongoose
   .connect(MONGODB_URI)
@@ -14,17 +18,18 @@ mongoose
   )
   .catch((err) => console.error("Error connecting to mongo", err));
 
-// STATIC DATA
-// Devs Team - Import the provided files with JSON data of students and cohorts here:
+
+// IMPORT MODELS
+
 const Student = require("./models/Student.model");
 const Cohort = require("./models/Cohort.model");
 
-// INITIALIZE EXPRESS APP - https://expressjs.com/en/4x/api.html#express
+// INITIALIZE EXPRESS APP 
+
 const app = express();
 
 // MIDDLEWARE
-// Research Team - Set up CORS middleware here:
-// ...
+
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.static("public"));
@@ -32,18 +37,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(cors("*"));
 
-// ROUTES - https://expressjs.com/en/starter/basic-routing.html
-// Devs Team - Start working on the routes here:
+// DOC ROUTE
 
-/*
-GET	/api/cohorts	(empty)	Returns all the cohorts in JSON format
-GET	/api/cohorts/:cohortId	(empty)	Returns the specified cohort by id
-*/
 app.get("/docs", (req, res) => {
   res.sendFile(__dirname + "/views/docs.html");
 });
 
-//cohorts
+// COHORT ROUTES
+
+// GET
+
 app.get("/api/cohorts", (req, res) => {
   Cohort.find()
     .then((results) => res.json(results))
@@ -52,6 +55,7 @@ app.get("/api/cohorts", (req, res) => {
       res.status(404).json({ error: "No cohort found" });
     });
 });
+
 app.get("/api/cohorts/:cohortId", (req, res) => {
   const { cohortId } = req.params;
   Cohort.findById(cohortId)
@@ -61,6 +65,9 @@ app.get("/api/cohorts/:cohortId", (req, res) => {
       res.status(404).json({ error: "No cohort found" });
     });
 });
+
+// POST
+
 app.post("/api/cohorts", (req, res) => {
   Cohort.create({
     cohortSlug: req.body.cohortSlug,
@@ -85,12 +92,55 @@ app.post("/api/cohorts", (req, res) => {
     });
 });
 
-//students
+//PUT
 
-// RUTAS GET
+app.put("/api/cohorts/:cohortId", (req, res) => {
+  Cohort.findByIdAndUpdate(
+    req.params.cohortId,
+    {
+      cohortSlug: req.body.cohortSlug,
+      cohortName: req.body.cohortName,
+      program: req.body.program,
+      format: req.body.format,
+      campus: req.body.campus,
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
+      inProgress: req.body.inProgress,
+      programManager: req.body.programManager,
+      leadTeacher: req.body.leadTeacher,
+      totalHours: req.body.totalHours,
+    },
+    { new: true }
+  )
+
+    .then((cohort) => {
+      res.json(cohort);
+    })
+    .catch((error) => {
+      res.status(400).json(error);
+    });
+});
+
+// DELETE
+
+app.delete("/api/cohorts/:cohortId", (req, res) => {
+  Cohort.findByIdAndDelete(req.params.cohortId)
+
+    .then((cohort) => {
+      res.json({ cohort });
+    })
+    .catch((error) => {
+      res.status(400).json(error);
+    });
+});
+
+//STUDENTS ROUTES
+
+// GET
 
 app.get("/api/students", (req, res) => {
   Student.find()
+    .populate("cohort")
     .then((results) => res.json(results))
     .catch((error) => {
       console.error("STUDENTS NOT FOUND", error);
@@ -101,6 +151,7 @@ app.get("/api/students", (req, res) => {
 app.get("/api/students/:studentId", (req, res) => {
   const { studentId } = req.params;
   Student.findById(studentId)
+    .populate("cohort", "cohortName")
     .then((results) => res.json(results))
     .catch((error) => {
       console.error("STUDENT NOT FOUND", error);
@@ -110,9 +161,9 @@ app.get("/api/students/:studentId", (req, res) => {
 
 app.get("/api/students/cohort/:cohortId", (req, res) => {
   const { cohortId } = req.params;
-  console.log(cohortId);
 
   Student.find({ cohort: cohortId })
+    .populate("cohort")
     .then((student) => {
       res.json(student);
     })
@@ -121,36 +172,12 @@ app.get("/api/students/cohort/:cohortId", (req, res) => {
     });
 });
 
-// RUTAS POST
+// POST
 
 app.post("/api/students", (req, res) => {
-  students
-    .create({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      phone: req.body.phone,
-      linkedinUrl: req.body.linkedinUrl,
-      languages: req.body.languages,
-      program: req.body.program,
-      background: req.body.background,
-      cohort: req.body.cohort,
-      projects: req.body.projects,
-    })
-    .then((createdStudent) => {
-      console.log("Student created ->", createdStudent);
-      res.status(201).json(createdStudent);
-    })
-    .catch((error) => {
-      console.error("Error while creating the student ->", error);
-      res.status(500).json({ error: "Failed to create the student" });
-    });
-});
+  console.log(req.body);
 
-// RUTAS PUT
-
-app.put("/students/:studentId", (req, res) => {
-  Student.findByIdAndUpdate(req.params.studentId, {
+  Student.create({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
@@ -162,6 +189,35 @@ app.put("/students/:studentId", (req, res) => {
     cohort: req.body.cohort,
     projects: req.body.projects,
   })
+    .then((createdStudent) => {
+      console.log("Student created ->", createdStudent);
+      res.status(201).json(createdStudent);
+    })
+    .catch((error) => {
+      console.error("Error while creating the student ->", error);
+      res.status(500).json({ error: "Failed to create the student" });
+    });
+});
+
+// PUT
+
+app.put("/api/students/:studentId", (req, res) => {
+  Student.findByIdAndUpdate(
+    req.params.studentId,
+    {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      phone: req.body.phone,
+      linkedinUrl: req.body.linkedinUrl,
+      languages: req.body.languages,
+      program: req.body.program,
+      background: req.body.background,
+      cohort: req.body.cohort,
+      projects: req.body.projects,
+    },
+    { new: true }
+  )
 
     .then((student) => {
       res.json(student);
@@ -171,13 +227,13 @@ app.put("/students/:studentId", (req, res) => {
     });
 });
 
-// RUTAS DELETE
+// DELETE
 
-app.put("/students/:studentId", (req, res) => {
+app.delete("/api/students/:studentId", (req, res) => {
   Student.findByIdAndDelete(req.params.studentId)
 
     .then((student) => {
-      res.json({student});
+      res.json({ student });
     })
     .catch((error) => {
       res.status(400).json(error);

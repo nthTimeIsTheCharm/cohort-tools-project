@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-// definimos el esquema de la colección
+
 const StudentSchema = new Schema({
   firstName: {
     type: String,
@@ -19,7 +19,7 @@ const StudentSchema = new Schema({
     type: String,
     required: [true, "Phone number is required"],
   },
-  linkedInUrl: {
+  linkedinUrl: {
     type: String,
     required: [true, "LinkedIn URL is required"],
   },
@@ -29,7 +29,7 @@ const StudentSchema = new Schema({
   },
   program: {
     type: String,
-    enum: ["Web Development", "UX/UI", "Data Analytics", "Cybersecurity"],
+    enum: ["Web Dev", "UX/UI", "Data Analytics", "Cybersecurity"],
     required: [true, "Program is required"],
   },
   background: {

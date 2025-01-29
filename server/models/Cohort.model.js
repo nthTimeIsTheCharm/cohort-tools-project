@@ -36,7 +36,7 @@ const CohortSchema = new Schema({
     type: String,
   },
   inProgress: { type: Boolean, default: true },
-  
+
   programManager: {
     type: String,
   },
